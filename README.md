@@ -5,7 +5,7 @@ UOSIO.CDT is a toolchain for WebAssembly (WASM) and set of tools to facilitate c
 
 ### Guided Installation (Building from Scratch)
 ```sh
-$ git clone --recursive https://github.com/uosio/uosio.cdt
+$ git clone --recursive https://github.com/UlordChain/uosio.cdt
 $ cd uosio.cdt
 $ ./build.sh
 $ sudo ./install.sh
