@@ -27,5 +27,6 @@ $ sudo ./install.sh
 * uosio-objdump
 * uosio-readelf
 
-bin rel  wget ftp://tools.ulord.one/uosio.cdt.tar.gz
+bin release
+         wget ftp://tools.ulord.one/uosio.cdt.tar.gz
 
