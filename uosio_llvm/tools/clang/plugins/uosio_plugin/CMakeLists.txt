@@ -1,0 +1,1 @@
+add_llvm_loadable_module(uosio_plugin uosio_autogen.cpp PLUGIN_TOOL clang)
