@@ -1,5 +1,11 @@
 project(uosio_libraries)
 
+find_program(CCACHE_FOUND ccache)
+if (CCACHE_FOUND)
+    message(STATUS "Using ccache")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH ${UOSIO_CDT_BIN})
 include(UosioCDTMacros)
 
@@ -11,3 +17,4 @@ add_subdirectory(libc++)
 add_subdirectory(uosiolib)
 add_subdirectory(boost)
 add_subdirectory(native)
+add_subdirectory(rt)
