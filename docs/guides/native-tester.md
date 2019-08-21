@@ -6,7 +6,7 @@ Once you have your smart contract written then a test source file can be written
 
 `hello.hpp`
 ```c++ 
-#include <uosiolib/uosio.hpp>
+#include <uosio/uosio.hpp>
 
 using namespace uosio;
 
@@ -24,8 +24,8 @@ CONTRACT hello : public uosio::contract {
 and then a quick test
 `hello_test.cpp`
 ```c++
-#include <uosiolib/uosio.hpp>
-#include <uosio/native/tester.hpp>
+#include <uosio/uosio.hpp>
+#include <uosio/tester.hpp>
 
 #include <hello.hpp>
 
