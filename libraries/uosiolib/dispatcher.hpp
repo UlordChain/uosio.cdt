@@ -7,6 +7,8 @@
 
 #include <boost/mp11/tuple.hpp>
 
+#warning "<uosiolib/dispatcher.hpp> is deprecated use <uosio/dispatcher.hpp>"
+
 namespace uosio {
 
    template<typename Contract, typename FirstAction>
@@ -40,7 +42,7 @@ namespace uosio {
 
    /**
     * @addtogroup dispatcher Dispatcher C++ API
-    * @ingroup cpp_api
+    * @ingroup core
     * @brief Defines C++ functions to dispatch action to proper action handler inside a contract
     * @{
     */
@@ -84,9 +86,7 @@ namespace uosio {
       return true;
    }
 
-/// @}
-
-
+   /// @}
 
  // Helper macro for UOSIO_DISPATCH_INTERNAL
  #define UOSIO_DISPATCH_INTERNAL( r, OP, elem ) \
@@ -97,8 +97,6 @@ namespace uosio {
  // Helper macro for UOSIO_DISPATCH
  #define UOSIO_DISPATCH_HELPER( TYPE,  MEMBERS ) \
     BOOST_PP_SEQ_FOR_EACH( UOSIO_DISPATCH_INTERNAL, TYPE, MEMBERS )
-
-
 
 /**
  * @addtogroup dispatcher
@@ -115,6 +113,7 @@ namespace uosio {
  */
 #define UOSIO_DISPATCH( TYPE, MEMBERS ) \
 extern "C" { \
+   [[uosio::wasm_entry]] \
    void apply( uint64_t receiver, uint64_t code, uint64_t action ) { \
       if( code == receiver ) { \
          switch( action ) { \

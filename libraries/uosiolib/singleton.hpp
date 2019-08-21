@@ -2,11 +2,12 @@
 #include "multi_index.hpp"
 #include "system.hpp"
 
+#warning "<uosiolib/singleton.hpp> is deprecated use <uosio/singleton.hpp>"
 namespace  uosio {
 
    /**
     *  @defgroup singleton Singleton Table
-    *  @ingroup cpp_api
+    *  @ingroup contracts
     *  @brief Defines UOSIO Singleton Table used with %multiindex
     *  @{
     */

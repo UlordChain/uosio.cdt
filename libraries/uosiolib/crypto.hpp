@@ -11,10 +11,12 @@
 
 #include <array>
 
+#warning "<uosiolib/crypto.hpp> is deprecated use <uosio/crypto.hpp>"
+
 namespace uosio {
 
    /**
-   *  @defgroup publickeytype Public Key Type
+   *  @defgroup public_key Public Key Type
    *  @ingroup types
    *  @brief Specifies public key type
    *
@@ -51,7 +53,7 @@ namespace uosio {
    /// @} publickeytype
 
    /**
-   *  @defgroup signature Public Key Type
+   *  @defgroup signature Signature type
    *  @ingroup types
    *  @brief Specifies signature type
    *
@@ -89,7 +91,7 @@ namespace uosio {
 
    /**
     *  @defgroup crypto Chain API
-    *  @ingroup cpp_api
+    *  @ingroup core
     *  @brief Defines API for calculating and checking hashes
     *  @{
     */

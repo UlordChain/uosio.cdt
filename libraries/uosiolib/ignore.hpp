@@ -1,5 +1,7 @@
 #pragma once
 
+#warning "<uosiolib/ignore.hpp> is deprecated use <uosio/ignore.hpp>"
+
 namespace uosio {
    /**
     * @brief Tells the datastream to ignore this type, but allows the abi generator to add the correct type.

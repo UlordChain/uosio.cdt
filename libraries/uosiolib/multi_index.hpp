@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <memory>
 
+#warning "<uosiolib/multi_index.hpp> is deprecated use <uosio/multi_index.hpp>"
+
 namespace uosio {
 
 constexpr static inline name same_payer{};
@@ -143,12 +145,6 @@ namespace _multi_index_detail {
       static constexpr long double true_lowest() { return -std::numeric_limits<long double>::infinity(); }
    };
 
-   WRAP_SECONDARY_ARRAY_TYPE(idx256, uosio::key256)
-   template<>
-   struct secondary_key_traits<uosio::key256> {
-      static constexpr uosio::key256 true_lowest() { return uosio::key256(); }
-   };
-
    WRAP_SECONDARY_ARRAY_TYPE(idx256, uosio::fixed_bytes<32>)
    template<>
    struct secondary_key_traits<uosio::fixed_bytes<32>> {
@@ -196,9 +192,9 @@ struct indexed_by {
 };
 
 /**
- *  @defgroup multiindex Multi Index Table
+ *  @defgroup multi_index Multi Index Table
  *  @brief Defines UOSIO Multi Index Table
- *  @ingroup cpp_api
+ *  @ingroup contracts
  *
  *  @details UOSIO Multi-Index API provides a C++ interface to the UOSIO database. It is patterned after Boost Multi Index Container.
  *  UOSIO Multi-Index table requires exactly a uint64_t primary key. For the table to be able to retrieve the primary key,

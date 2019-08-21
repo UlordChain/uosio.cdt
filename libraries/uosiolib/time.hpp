@@ -4,10 +4,11 @@
 #include <stdint.h>
 #include <string>
 
+#warning "<uosiolib/time.hpp> is deprecated use <uosio/time.hpp>"
 namespace uosio {
   /**
    * @addtogroup time
-   * @ingroup cpp_api
+   * @ingroup contracts
    * @{
    */
   class microseconds {

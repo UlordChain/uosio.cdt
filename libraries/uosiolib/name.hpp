@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#warning "<uosiolib/name.hpp> is deprecated use <uosio/name.hpp>"
 namespace uosio {
 
    /**

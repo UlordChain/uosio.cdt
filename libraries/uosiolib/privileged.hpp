@@ -3,12 +3,14 @@
 #include "serialize.hpp"
 #include "crypto.hpp"
 
+#warning "<uosiolib/privileged.hpp> is deprecated use <uosio/privileged.hpp>"
 namespace uosio {
 
   /**
-   * @addtogroup privileged Privileged C++ API
-   * @ingroup cpp_api
    * Defines C++ Privileged API
+   *
+   * @addtogroup privileged Privileged C++ API
+   * @ingroup contracts
    * @{
    */
 
@@ -150,7 +152,7 @@ namespace uosio {
    ///@}
 
    /**
-   *  @defgroup types
+   *  @ingroup core
    *  @{
    */
 

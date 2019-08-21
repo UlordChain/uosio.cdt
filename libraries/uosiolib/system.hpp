@@ -4,14 +4,16 @@
  */
 #pragma once
 #include "system.h"
+#include <alloca.h>
 #include <string>
 
+#warning "<uosiolib/system.hpp> is deprecated use <uosio/system.hpp>"
 namespace uosio {
 
    /**
     *  @addtogroup system System C++ API
-    *  @ingroup cpp_api
-    *  @brief Defines wrappers over uosio_assert 
+    *  @ingroup core
+    *  @brief Defines wrappers over uosio_assert
     *
     *  @{
     */

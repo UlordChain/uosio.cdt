@@ -4,6 +4,8 @@
 #include "datastream.hpp"
 
 
+#warning "<uosiolib/contract.hpp> is deprecated use <uosio/contract.hpp>"
+
 /**
  * @defgroup contract Contract
  * @ingroup types

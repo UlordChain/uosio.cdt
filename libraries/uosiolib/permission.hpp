@@ -11,7 +11,15 @@
 #include <set>
 #include <limits>
 
+#warning "<uosiolib/permission.hpp> is deprecated use <uosio/permission.hpp>"
 namespace uosio {
+
+  /**
+   * @addtogroup permission Permission C++ API
+   * @brief Defines C++ API functions for validating authorization of keys and permissions
+   * @ingroup types
+   * @{
+   */
 
    /**
     *  Checks if a transaction is authorized by a provided set of keys and permissions
@@ -95,5 +103,7 @@ namespace uosio {
 
       return (res > 0);
    }
+
+   ///@}
 
 }
