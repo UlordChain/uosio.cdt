@@ -1,44 +1,46 @@
 add_custom_command( TARGET UosioClang POST_BUILD COMMAND mkdir -p ${CMAKE_BINARY_DIR}/bin )
 macro( uosio_clang_install file )
-   set(BINARY_DIR ${CMAKE_BINARY_DIR}/UosioClang-prefix/src/UosioClang-build/bin)
+   set(BINARY_DIR ${CMAKE_BINARY_DIR}/uosio_llvm/bin)
    add_custom_command( TARGET UosioClang POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${BINARY_DIR}/${file} ${CMAKE_BINARY_DIR}/bin/ )
    install(FILES ${BINARY_DIR}/${file}
-      DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+      DESTINATION ${CDT_INSTALL_PREFIX}/bin
       PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endmacro( uosio_clang_install )
 
 macro( uosio_clang_install_and_symlink file symlink )
-   set(BINARY_DIR ${CMAKE_BINARY_DIR}/UosioClang-prefix/src/UosioClang-build/bin)
+   set(BINARY_DIR ${CMAKE_BINARY_DIR}/uosio_llvm/bin)
    add_custom_command( TARGET UosioClang POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${BINARY_DIR}/${file} ${CMAKE_BINARY_DIR}/bin/ )
    add_custom_command( TARGET UosioClang POST_BUILD COMMAND cd ${CMAKE_BINARY_DIR}/bin && ln -sf ${file} ${symlink} )
    install(FILES ${BINARY_DIR}/${file}
-      DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+      DESTINATION ${CDT_INSTALL_PREFIX}/bin
       PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/bin)")
+   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink ${CDT_INSTALL_PREFIX}/bin/${file} ${CMAKE_INSTALL_PREFIX}/bin/${symlink})")
 endmacro( uosio_clang_install_and_symlink )
 
 macro( uosio_tool_install file )
-   set(BINARY_DIR ${CMAKE_BINARY_DIR}/UosioTools-prefix/src/UosioTools-build/bin)
+   set(BINARY_DIR ${CMAKE_BINARY_DIR}/tools/bin)
    add_custom_command( TARGET UosioTools POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${BINARY_DIR}/${file} ${CMAKE_BINARY_DIR}/bin/ )
    install(FILES ${BINARY_DIR}/${file}
-      DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+      DESTINATION ${CDT_INSTALL_PREFIX}/bin
       PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endmacro( uosio_tool_install )
 
 macro( uosio_tool_install_and_symlink file symlink )
-   set(BINARY_DIR ${CMAKE_BINARY_DIR}/UosioTools-prefix/src/UosioTools-build/bin)
+   set(BINARY_DIR ${CMAKE_BINARY_DIR}/tools/bin)
    add_custom_command( TARGET UosioTools POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${BINARY_DIR}/${file} ${CMAKE_BINARY_DIR}/bin/ )
-   add_custom_command( TARGET UosioTools POST_BUILD COMMAND cd ${CMAKE_BINARY_DIR}/bin && ln -sf ${file} ${symlink} )
    install(FILES ${BINARY_DIR}/${file}
-      DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+      DESTINATION ${CDT_INSTALL_PREFIX}/bin
       PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/bin)")
+   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink ${CDT_INSTALL_PREFIX}/bin/${file} ${CMAKE_INSTALL_PREFIX}/bin/${symlink})")
 endmacro( uosio_tool_install_and_symlink )
 
 macro( uosio_libraries_install)
    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/lib)
    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/include)
-   set(BIN_DIR ${CMAKE_BINARY_DIR}/UosioWasmLibraries-prefix/src/UosioWasmLibraries-build/)
-   install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/ DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-   install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR})
+   install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/ DESTINATION ${CDT_INSTALL_PREFIX}/lib)
+   install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION ${CDT_INSTALL_PREFIX}/include)
 endmacro( uosio_libraries_install )
 
 uosio_clang_install_and_symlink(llvm-ranlib uosio-ranlib)
@@ -56,15 +58,15 @@ uosio_clang_install(ld.lld)
 uosio_clang_install(ld64.lld)
 uosio_clang_install(clang-7)
 uosio_clang_install(wasm-ld)
-uosio_tool_install(uosio-pp)
-uosio_tool_install(uosio-wast2wasm)
-uosio_tool_install(uosio-wasm2wast)
-uosio_tool_install(uosio-cc)
-uosio_tool_install(uosio-cpp)
-uosio_tool_install(uosio-ld)
-uosio_tool_install(uosio-abigen)
-uosio_tool_install(uosio-abidiff)
-uosio_tool_install(uosio-init)
+uosio_tool_install_and_symlink(uosio-pp uosio-pp)
+uosio_tool_install_and_symlink(uosio-wast2wasm uosio-wast2wasm)
+uosio_tool_install_and_symlink(uosio-wasm2wast uosio-wasm2wast)
+uosio_tool_install_and_symlink(uosio-cc uosio-cc)
+uosio_tool_install_and_symlink(uosio-cpp uosio-cpp)
+uosio_tool_install_and_symlink(uosio-ld uosio-ld)
+uosio_tool_install_and_symlink(uosio-abigen uosio-abigen)
+uosio_tool_install_and_symlink(uosio-abidiff uosio-abidiff)
+uosio_tool_install_and_symlink(uosio-init uosio-init)
 uosio_clang_install(../lib/LLVMUosioApply${CMAKE_SHARED_LIBRARY_SUFFIX})
 uosio_clang_install(../lib/LLVMUosioSoftfloat${CMAKE_SHARED_LIBRARY_SUFFIX})
 uosio_clang_install(../lib/uosio_plugin${CMAKE_SHARED_LIBRARY_SUFFIX})
