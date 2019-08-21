@@ -5,21 +5,19 @@ find_program(SCCACHE_FOUND sccache)
 if (SCCACHE_FOUND)
    message(STATUS "Using sccache")
    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE sccache)
-   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK sccache)
 else()
    find_program(CCACHE_FOUND ccache)
    if (CCACHE_FOUND)
       message(STATUS "Using ccache")
       set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-      set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
    endif()
 endif()
 
 
 set(VERSION_MAJOR 1)
-set(VERSION_MINOR 5)
-set(VERSION_PATCH 0)
-#set(VERSION_SUFFIX )
+set(VERSION_MINOR 6)
+set(VERSION_PATCH 2)
+#set(VERSION_SUFFIX rc2)
 
 if (VERSION_SUFFIX)
    set(VERSION_FULL "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-${VERSION_SUFFIX}")
@@ -27,12 +25,7 @@ else()
    set(VERSION_FULL "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 endif()
 
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-   message(WARNING "CMAKE_INSTALL_PREFIX is set to default path of ${CMAKE_INSTALL_PREFIX}, resetting to ${CMAKE_INSTALL_PREFIX}/uosio.cdt")
-   set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/uosio.cdt")
-elseif ("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local")
-   message(WARNING "CMAKE_INSTALL_PREFIX is explicitly set to /usr/local. This is not recommended.")
-endif()
+set(CDT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/uosio.cdt)
 
 include(GNUInstallDirs)
 
@@ -47,13 +40,13 @@ configure_file(${CMAKE_SOURCE_DIR}/modules/uosio.cdt-config.cmake ${CMAKE_BINARY
 configure_file(${CMAKE_SOURCE_DIR}/modules/UosioCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/uosio.cdt/UosioCDTMacros.cmake @ONLY)
 configure_file(${CMAKE_SOURCE_DIR}/modules/UosioWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/uosio.cdt/UosioWasmToolchain.cmake @ONLY)
 
-set(CDT_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
+set(CDT_ROOT_DIR ${CDT_INSTALL_PREFIX})
 configure_file(${CMAKE_SOURCE_DIR}/modules/uosio.cdt-config.cmake ${CMAKE_BINARY_DIR}/modules/uosio.cdt-config.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/modules/uosio.cdt-config.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/uosio.cdt)
 configure_file(${CMAKE_SOURCE_DIR}/modules/UosioCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/modules/UosioCDTMacros.cmake @ONLY)
 configure_file(${CMAKE_SOURCE_DIR}/modules/UosioWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/modules/UosioWasmToolchain.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/modules/UosioWasmToolchain.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/uosio.cdt)
-install(FILES ${CMAKE_BINARY_DIR}/modules/UosioCDTMacros.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/uosio.cdt)
+install(FILES ${CMAKE_BINARY_DIR}/modules/UosioCDTMacros.cmake DESTINATION ${CDT_INSTALL_PREFIX}/lib/cmake/uosio.cdt)
 
 set(CDT_ROOT_DIR "_PREFIX_")
 configure_file(${CMAKE_SOURCE_DIR}/modules/UosioCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/modules/UosioCDTMacrosPackage.cmake @ONLY)
@@ -65,10 +58,10 @@ include(modules/LibrariesExternalProject.txt)
 include(modules/InstallCDT.cmake)
 
 configure_file(${CMAKE_SOURCE_DIR}/imports/uosio.imports.in ${CMAKE_BINARY_DIR}/uosio.imports COPYONLY)
-install(FILES ${CMAKE_BINARY_DIR}/uosio.imports DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES ${CMAKE_BINARY_DIR}/uosio.imports DESTINATION ${CDT_INSTALL_PREFIX})
 
 configure_file(${CMAKE_SOURCE_DIR}/scripts/ricarduos/ricarduos.py ${CMAKE_BINARY_DIR}/scripts/ricarduos.py COPYONLY)
-install(FILES ${CMAKE_BINARY_DIR}/scripts/ricarduos.py DESTINATION ${CMAKE_INSTALL_PREFIX}/scripts)
+install(FILES ${CMAKE_BINARY_DIR}/scripts/ricarduos.py DESTINATION ${CDT_INSTALL_PREFIX}/scripts)
 
 # section for package construction
 set(VENDOR "block.one")
@@ -89,8 +82,8 @@ configure_file(${CMAKE_SOURCE_DIR}/tools/external/wabt/LICENSE ${CMAKE_BINARY_DI
 configure_file(${CMAKE_SOURCE_DIR}/tools/jsoncons/LICENSE ${CMAKE_BINARY_DIR}/licenses/jsoncons.license COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/LICENSE ${CMAKE_BINARY_DIR}/licenses/uosio.cdt.license COPYONLY)
 
-#include(modules/TestsExternalProject.txt)
+include(modules/TestsExternalProject.txt)
 
-#include(CTest)
-#enable_testing()
-#add_subdirectory(tests)
+include(CTest)
+enable_testing()
+add_subdirectory(tests)
