@@ -1,6 +1,7 @@
 #pragma once
 #include <setjmp.h>
 
+#warning "<uosio/native/crt.hpp> is deprecated use <uosio/crt.hpp>"
 namespace uosio { namespace cdt {
    enum output_stream_kind {
       std_out,

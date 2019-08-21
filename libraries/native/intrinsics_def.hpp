@@ -1,18 +1,19 @@
 #pragma once
 
-#include <uosiolib/action.h>
-#include <uosiolib/chain.h>
-#include <uosiolib/crypto.h>
-#include <uosiolib/db.h>
-#include <uosiolib/permission.h>
-#include <uosiolib/print.h>
-#include <uosiolib/privileged.h>
-#include <uosiolib/system.h>
-#include <uosiolib/transaction.h>
-#include <uosiolib/types.h>
+#include <uosio/action.h>
+#include <uosio/chain.h>
+#include <uosio/crypto.h>
+#include <uosio/db.h>
+#include <uosio/permission.h>
+#include <uosio/print.h>
+#include <uosio/privileged.h>
+#include <uosio/system.h>
+#include <uosio/transaction.h>
+#include <uosio/types.h>
 
 #include <type_traits>
 
+#warning "<uosio/native/intrinsics_def.hpp> is deprecated use <uosio/intrinsics_def.hpp>"
 namespace uosio { namespace native {
    template <typename... Args, size_t... Is>
    auto get_args_full(std::index_sequence<Is...>) {
@@ -123,7 +124,6 @@ intrinsic_macro(check_permission_authorization) \
 intrinsic_macro(get_permission_last_used) \
 intrinsic_macro(get_account_creation_time) \
 intrinsic_macro(current_time) \
-intrinsic_macro(require_notify_info) \
 intrinsic_macro(publication_time) \
 intrinsic_macro(read_action_data) \
 intrinsic_macro(action_data_size) \

@@ -1,8 +1,9 @@
-#include <uosiolib/action.hpp>
+#include <uosio/action.hpp>
 #include "intrinsics_def.hpp"
 
 #pragma once
 
+#warning "<uosio/native/intrinsics.hpp> is deprecated use <uosio/intrinsics.hpp>"
 namespace uosio { namespace native {
    
    class intrinsics {
