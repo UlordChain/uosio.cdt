@@ -931,7 +931,15 @@ def C11NoReturn : InheritableAttr {
 
 def UosioIgnore : InheritableAttr {
    let Spellings = [CXX11<"uosio", "ignore">, GNU<"uosio_ignore">];
+   let Args = [StringArgument<"name", 1>];
    let Subjects = SubjectList<[CXXRecord, Record]>;
+   let Documentation = [UosioIgnoreDocs];
+}
+
+def UosioNotify : InheritableAttr {
+   let Spellings = [CXX11<"uosio", "on_notify">, GNU<"uosio_on_notify">];
+   let Args = [StringArgument<"name">];
+   let Subjects = SubjectList<[CXXMethod]>;
    let Documentation = [UosioIgnoreDocs];
 }
 
@@ -947,6 +955,39 @@ def UosioContract : InheritableAttr {
    let Args = [StringArgument<"name", 1>];
    let Subjects = SubjectList<[CXXRecord, CXXMethod]>;
    let Documentation = [UosioContractDocs];
+}
+
+def UosioWasmAction : InheritableAttr {
+   let Spellings = [CXX11<"uosio", "wasm_action">, GNU<"uosio_wasm_action">];
+   let Args = [StringArgument<"name", 1>];
+   let Subjects = SubjectList<[Function]>;
+   let Documentation = [UosioWasmImportDocs];
+}
+
+def UosioWasmNotify : InheritableAttr {
+   let Spellings = [CXX11<"uosio", "wasm_notify">, GNU<"uosio_wasm_notify">];
+   let Args = [StringArgument<"name", 1>];
+   let Subjects = SubjectList<[Function]>;
+   let Documentation = [UosioWasmImportDocs];
+}
+
+def UosioWasmABI : InheritableAttr {
+   let Spellings = [CXX11<"uosio", "wasm_abi">, GNU<"uosio_wasm_abi">];
+   let Args = [StringArgument<"abi", 1>];
+   let Subjects = SubjectList<[Function]>;
+   let Documentation = [UosioWasmImportDocs];
+}
+
+def UosioWasmEntry : InheritableAttr {
+   let Spellings = [CXX11<"uosio", "wasm_entry">, GNU<"uosio_wasm_entry">];
+   let Subjects = SubjectList<[Function]>;
+   let Documentation = [UosioWasmImportDocs];
+}
+
+def UosioWasmImport : InheritableAttr {
+   let Spellings = [CXX11<"uosio", "wasm_import">, GNU<"uosio_wasm_import">];
+   let Subjects = SubjectList<[Function]>;
+   let Documentation = [UosioWasmImportDocs];
 }
 
 def UosioAction : InheritableAttr {

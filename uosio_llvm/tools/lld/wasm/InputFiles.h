@@ -67,6 +67,7 @@ public:
 
   ArrayRef<Symbol *> getSymbols() const { return Symbols; }
 
+  StringRef UosioABI;
 protected:
   InputFile(Kind K, MemoryBufferRef M) : MB(M), FileKind(K) {}
   MemoryBufferRef MB;
@@ -131,8 +132,13 @@ public:
   DataSymbol *getDataSymbol(uint32_t Index) const;
   GlobalSymbol *getGlobalSymbol(uint32_t Index) const;
   SectionSymbol *getSectionSymbol(uint32_t Index) const;
-
+  std::string getUosioABI() const { return uosio_abi; }
+  ArrayRef<StringRef> getUosioActions() const { return uosio_actions; }
+  ArrayRef<StringRef> getUosioNotify() const { return uosio_notify; }
 private:
+  std::string uosio_abi;
+  ArrayRef<StringRef> uosio_actions;
+  ArrayRef<StringRef> uosio_notify;
   Symbol *createDefined(const WasmSymbol &Sym);
   Symbol *createUndefined(const WasmSymbol &Sym);
 

@@ -4293,6 +4293,15 @@ ImplicitParamDecl *ImplicitParamDecl::CreateDeserialized(ASTContext &C,
   return new (C, ID) ImplicitParamDecl(C, QualType(), ImplicitParamKind::Other);
 }
 
+bool FunctionDecl::isUosioWasmABI()const { return hasAttr<UosioWasmABIAttr>(); }
+std::string FunctionDecl::getWasmABI()const { return getAttr<UosioWasmABIAttr>()->getAbi(); }
+bool FunctionDecl::isUosioWasmEntry()const { return hasAttr<UosioWasmEntryAttr>(); }
+bool FunctionDecl::isUosioWasmImport()const { return hasAttr<UosioWasmImportAttr>(); }
+bool FunctionDecl::isUosioWasmAction()const { return hasAttr<UosioWasmActionAttr>(); }
+std::string FunctionDecl::getUosioWasmAction()const { return getAttr<UosioWasmActionAttr>()->getName(); }
+bool FunctionDecl::isUosioWasmNotify()const { return hasAttr<UosioWasmNotifyAttr>(); }
+std::string FunctionDecl::getUosioWasmNotify()const { return getAttr<UosioWasmNotifyAttr>()->getName(); }
+
 FunctionDecl *FunctionDecl::Create(ASTContext &C, DeclContext *DC,
                                    SourceLocation StartLoc,
                                    const DeclarationNameInfo &NameInfo,

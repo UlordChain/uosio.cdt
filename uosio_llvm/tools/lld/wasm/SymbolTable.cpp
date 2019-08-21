@@ -66,6 +66,8 @@ void SymbolTable::reportRemainingUndefines() {
       continue;
     if (Config->AllowUndefinedSymbols.count(Sym->getName()) != 0)
       continue;
+    if (allowed.count(Sym->getName()) != 0)
+       continue;
     if (!Sym->IsUsedInRegularObj)
       continue;
     Undefs.insert(Sym);
@@ -75,13 +77,16 @@ void SymbolTable::reportRemainingUndefines() {
     return;
 
   for (ObjFile *File : ObjectFiles)
-    for (Symbol *Sym : File->getSymbols())
+    for (Symbol *Sym : File->getSymbols()) {
       if (Undefs.count(Sym))
         error(toString(File) + ": undefined symbol: " + toString(*Sym));
+     }
 
   for (Symbol *Sym : Undefs)
-    if (!Sym->getFile())
-      error("undefined symbol: " + toString(*Sym));
+    if (!Sym->getFile()) {
+      if (toString(*Sym) != Config->Entry)
+         error("undefined symbol: " + toString(*Sym));
+    }
 }
 
 Symbol *SymbolTable::find(StringRef Name) {
@@ -193,7 +198,7 @@ static bool shouldReplace(const Symbol *Existing, InputFile *NewFile,
     return true;
   }
 
-  // Neither symbol is week. They conflict.
+  // Neither symbol is weak. They conflict.
   error("duplicate symbol: " + toString(*Existing) + "\n>>> defined in " +
         toString(Existing->getFile()) + "\n>>> defined in " +
         toString(NewFile));
@@ -216,8 +221,10 @@ Symbol *SymbolTable::addDefinedFunction(StringRef Name, uint32_t Flags,
     return S;
   }
 
-  if (Function)
-    checkFunctionType(S, File, &Function->Signature);
+  if (Function) {
+    if (Name != Config->Entry)
+       checkFunctionType(S, File, &Function->Signature);
+  }
 
   if (shouldReplace(S, File, Flags))
     replaceSymbol<DefinedFunction>(S, Name, Flags, File, Function);

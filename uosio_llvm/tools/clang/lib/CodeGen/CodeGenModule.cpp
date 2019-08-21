@@ -1150,7 +1150,7 @@ void CodeGenModule::SetLLVMFunctionAttributesForDefinition(const Decl *D,
     else if (LangOpts.getStackProtector() == LangOptions::SSPReq)
       B.addAttribute(llvm::Attribute::StackProtectReq);
   }
-
+   
   if (!D) {
     // If we don't have a declaration to control inlining, the function isn't
     // explicitly marked as alwaysinline for semantic reasons, and inlining is
@@ -2395,9 +2395,28 @@ llvm::Constant *CodeGenModule::GetOrCreateLLVMFunction(
     ForDefinition_t IsForDefinition) {
   const Decl *D = GD.getDecl();
 
+  bool isWasmImport = false;
+  bool isWasmEntry  = false;
+  bool isWasmABI    = false;
+  bool isWasmAction = false;
+  bool isWasmNotify = false;
+
   // Any attempts to use a MultiVersion function should result in retrieving
   // the iFunc instead. Name Mangling will handle the rest of the changes.
   if (const FunctionDecl *FD = cast_or_null<FunctionDecl>(D)) {
+     if (FD->hasAttr<UosioWasmImportAttr>())
+        isWasmImport = true;
+     if (FD->hasAttr<UosioWasmEntryAttr>())
+        isWasmEntry = true;
+     if (FD->hasAttr<UosioWasmABIAttr>())
+        isWasmABI = true;
+     if (FD->hasAttr<UosioWasmActionAttr>())
+        isWasmAction = true;
+     if (FD->hasAttr<UosioWasmNotifyAttr>())
+        isWasmNotify = true;
+
+
+
     // For the device mark the function as one that should be emitted.
     if (getLangOpts().OpenMPIsDevice && OpenMPRuntime &&
         !OpenMPRuntime->markAsGlobalTarget(GD) && FD->isDefined() &&
@@ -2513,6 +2532,24 @@ llvm::Constant *CodeGenModule::GetOrCreateLLVMFunction(
     llvm::AttrBuilder B(ExtraAttrs, llvm::AttributeList::FunctionIndex);
     F->addAttributes(llvm::AttributeList::FunctionIndex, B);
   }
+  if (isWasmImport)
+   F->addFnAttr("uosio_wasm_import", "true");
+
+  if (isWasmEntry)
+   F->addFnAttr("uosio_wasm_entry", "true");
+     
+  if (isWasmABI)
+     if (const FunctionDecl *FD = cast_or_null<FunctionDecl>(D)) {
+        F->addFnAttr("uosio_wasm_abi", FD->getWasmABI().c_str());
+     }
+  if (isWasmAction)
+     if (const FunctionDecl *FD = cast_or_null<FunctionDecl>(D)) {
+        F->addFnAttr("uosio_wasm_action", FD->getUosioWasmAction().c_str());
+     }
+  if (isWasmNotify)
+     if (const FunctionDecl *FD = cast_or_null<FunctionDecl>(D)) {
+        F->addFnAttr("uosio_wasm_notify", FD->getUosioWasmNotify().c_str());
+     }
 
   if (!DontDefer) {
     // All MSVC dtors other than the base dtor are linkonce_odr and delegate to

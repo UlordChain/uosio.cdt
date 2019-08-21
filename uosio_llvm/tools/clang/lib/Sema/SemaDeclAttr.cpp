@@ -398,7 +398,30 @@ static void handleUosioRicardianAttribute(Sema &S, Decl *D, const AttributeList 
                                 AL.getAttributeSpellingListIndex()));
 }
 
+static void handleUosioNotifyAttribute(Sema &S, Decl *D, const AttributeList &AL) {
+  // Handle the cases where the attribute has a text message.
+  StringRef Str, Replacement;
+  if (AL.isArgExpr(0) && AL.getArgAsExpr(0) &&
+      !S.checkStringLiteralArgumentAttr(AL, 0, Str))
+    return;
+   
+   D->addAttr(::new (S.Context)
+                 UosioNotifyAttr(AL.getRange(), S.Context, Str,
+                                AL.getAttributeSpellingListIndex()));
+}
+
 static void handleUosioContractAttribute(Sema &S, Decl *D, const AttributeList &AL) {
+  // Handle the cases where the attribute has a text message.
+  StringRef Str, Replacement;
+  if (AL.isArgExpr(0) && AL.getArgAsExpr(0) &&
+      !S.checkStringLiteralArgumentAttr(AL, 0, Str))
+    return;
+  D->addAttr(::new (S.Context)
+                 UosioContractAttr(AL.getRange(), S.Context, Str,
+                                AL.getAttributeSpellingListIndex()));
+}
+
+static void handleUosioABIAttribute(Sema &S, Decl *D, const AttributeList &AL) {
   // Handle the cases where the attribute has a text message.
   StringRef Str, Replacement;
   if (AL.isArgExpr(0) && AL.getArgAsExpr(0) &&
@@ -406,7 +429,31 @@ static void handleUosioContractAttribute(Sema &S, Decl *D, const AttributeList &
     return;
 
   D->addAttr(::new (S.Context)
-                 UosioContractAttr(AL.getRange(), S.Context, Str,
+                 UosioWasmABIAttr(AL.getRange(), S.Context, Str,
+                                AL.getAttributeSpellingListIndex()));
+}
+
+static void handleUosioWasmActionAttribute(Sema &S, Decl *D, const AttributeList &AL) {
+  // Handle the cases where the attribute has a text message.
+  StringRef Str, Replacement;
+  if (AL.isArgExpr(0) && AL.getArgAsExpr(0) &&
+      !S.checkStringLiteralArgumentAttr(AL, 0, Str))
+    return;
+
+  D->addAttr(::new (S.Context)
+                 UosioWasmActionAttr(AL.getRange(), S.Context, Str,
+                                AL.getAttributeSpellingListIndex()));
+}
+
+static void handleUosioWasmNotifyAttribute(Sema &S, Decl *D, const AttributeList &AL) {
+  // Handle the cases where the attribute has a text message.
+  StringRef Str, Replacement;
+  if (AL.isArgExpr(0) && AL.getArgAsExpr(0) &&
+      !S.checkStringLiteralArgumentAttr(AL, 0, Str))
+    return;
+
+  D->addAttr(::new (S.Context)
+                 UosioWasmNotifyAttr(AL.getRange(), S.Context, Str,
                                 AL.getAttributeSpellingListIndex()));
 }
 
@@ -5869,6 +5916,12 @@ static void ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D,
     S.Diag(AL.getLoc(), diag::err_stmt_attribute_invalid_on_decl)
         << AL.getName() << D->getLocation();
     break;
+  case AttributeList::AT_UosioWasmImport:
+    handleSimpleAttribute<UosioWasmImportAttr>(S, D, AL);
+    break;
+  case AttributeList::AT_UosioWasmEntry:
+    handleSimpleAttribute<UosioWasmEntryAttr>(S, D, AL);
+    break;
   case AttributeList::AT_UosioIgnore:
     handleSimpleAttribute<UosioIgnoreAttr>(S, D, AL);
     break;
@@ -5878,11 +5931,23 @@ static void ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D,
   case AttributeList::AT_UosioTable:
     handleUosioTableAttribute(S, D, AL);
     break;
+  case AttributeList::AT_UosioWasmABI:
+    handleUosioABIAttribute(S, D, AL);
+    break;
+  case AttributeList::AT_UosioWasmAction:
+    handleUosioWasmActionAttribute(S, D, AL);
+    break;
+  case AttributeList::AT_UosioWasmNotify:
+    handleUosioWasmNotifyAttribute(S, D, AL);
+    break;
   case AttributeList::AT_UosioContract:
     handleUosioContractAttribute(S, D, AL);
     break;
   case AttributeList::AT_UosioRicardian:
     handleUosioRicardianAttribute(S, D, AL);
+    break;
+  case AttributeList::AT_UosioNotify:
+    handleUosioNotifyAttribute(S, D, AL);
     break;
   case AttributeList::AT_Interrupt:
     handleInterruptAttr(S, D, AL);

@@ -873,6 +873,13 @@ The ``uosio::contract`` attribute marks a method as being an uosio contract.
   }];
 }
 
+def UosioWasmImportDocs : Documentation {
+  let Category = DocCatFunction;
+  let Content = [{
+The ``uosio::wasm_import`` attribute marks a function as a wasm import.
+  }];
+}
+
 def UosioActionDocs : Documentation {
   let Category = DocCatFunction;
   let Content = [{

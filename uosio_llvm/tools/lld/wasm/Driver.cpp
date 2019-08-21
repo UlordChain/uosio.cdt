@@ -27,6 +27,7 @@
 #include "llvm/Support/Path.h"
 #include "llvm/Support/Process.h"
 #include "llvm/Support/TargetSelect.h"
+#include <cstring>
 
 #define DEBUG_TYPE "lld"
 
@@ -315,6 +316,7 @@ void LinkerDriver::link(ArrayRef<const char *> ArgsArr) {
 
   errorHandler().ErrorLimit = args::getInteger(Args, OPT_error_limit, 20);
 
+  Config->OtherModel = OPT_other_model;
   Config->AllowUndefined = Args.hasArg(OPT_allow_undefined);
   Config->Demangle = Args.hasFlag(OPT_demangle, OPT_no_demangle, true);
   Config->DisableVerify = Args.hasArg(OPT_disable_verify);
@@ -325,6 +327,7 @@ void LinkerDriver::link(ArrayRef<const char *> ArgsArr) {
       Args.hasFlag(OPT_fatal_warnings, OPT_no_fatal_warnings, false);
   Config->ImportMemory = Args.hasArg(OPT_import_memory);
   Config->ImportTable = Args.hasArg(OPT_import_table);
+  Config->OtherModel = Args.hasArg(OPT_other_model);
   Config->LTOO = args::getInteger(Args, OPT_lto_O, 2);
   Config->LTOPartitions = args::getInteger(Args, OPT_lto_partitions, 1);
   Config->Optimize = args::getInteger(Args, OPT_O, 0);
@@ -404,6 +407,16 @@ void LinkerDriver::link(ArrayRef<const char *> ArgsArr) {
     WasmSym::CallCtors = Symtab->addSyntheticFunction(
         "__wasm_call_ctors", WASM_SYMBOL_VISIBILITY_HIDDEN,
         make<SyntheticFunction>(NullSignature, "__wasm_call_ctors"));
+
+    static WasmSignature EntrySignature;
+    if (!Config->OtherModel)
+       EntrySignature = {{WASM_TYPE_I64, WASM_TYPE_I64, WASM_TYPE_I64}, WASM_TYPE_NORESULT};
+    else
+       EntrySignature = {{}, WASM_TYPE_NORESULT};
+    WasmSym::EntryFunc = Symtab->addSyntheticFunction(
+         Config->Entry, WASM_SYMBOL_VISIBILITY_DEFAULT | WASM_SYMBOL_BINDING_WEAK,
+         make<SyntheticFunction>(EntrySignature, Config->Entry));
+
     // TODO(sbc): Remove WASM_SYMBOL_VISIBILITY_HIDDEN when the mutable global
     // spec proposal is implemented in all major browsers.
     // See: https://github.com/WebAssembly/mutable-global
@@ -438,13 +451,23 @@ void LinkerDriver::link(ArrayRef<const char *> ArgsArr) {
   // Add synthetic dummies for weak undefined functions.
   if (!Config->Relocatable)
     handleWeakUndefines();
-
+  
+  // Is the entry symbol found
+  for (ObjFile *File : Symtab->ObjectFiles)
+    for (Symbol *Sym : File->getSymbols()) {
+       if (toString(*Sym) == Config->Entry)
+          Symtab->EntryIsUndefined = false;
+     }
+   
+   if (Config->OtherModel && Symtab->EntryIsUndefined)
+      error("entry symbol ("+Config->Entry+") is not defined");
   // Do link-time optimization if given files are LLVM bitcode files.
   // This compiles bitcode files into real object files.
   Symtab->addCombinedLTOObject();
   if (errorCount())
     return;
 
+     
   // Make sure we have resolved all symbols.
   if (!Config->Relocatable && !Config->AllowUndefined) {
     Symtab->reportRemainingUndefines();
@@ -460,7 +483,7 @@ void LinkerDriver::link(ArrayRef<const char *> ArgsArr) {
         error("symbol forced with --undefined not found: " + Sym->getName());
     }
     if (EntrySym && !EntrySym->isDefined())
-      error("entry symbol not defined (pass --no-entry to supress): " +
+       error("entry symbol not defined (pass --no-entry to supress): " +
             EntrySym->getName());
   }
   if (errorCount())
@@ -472,10 +495,40 @@ void LinkerDriver::link(ArrayRef<const char *> ArgsArr) {
     Symbol *Sym = Symtab->find(Name);
     if (Sym && Sym->isDefined())
       Sym->setHidden(false);
-    else if (!Config->AllowUndefined)
-      error("symbol exported via --export not found: " + Name);
+    //else if (!Config->AllowUndefined)
+    //  error("symbol exported via --export not found: " + Name);
   }
+  
+  auto get_kind = [](const char* str) -> uint8_t {
+     if (strcmp(str, "function") == 0)
+        return 0;
+     else if (strcmp(str, "table") == 0)
+        return 1;
+     else if (strcmp(str, "memory") == 0)
+        return 2;
+     return 3;
+  };
 
+  auto get_first = [](std::string exp) {
+     return exp.substr(0, exp.find(":"));
+  };
+  auto get_second = [](std::string exp) {
+     return exp.substr(exp.find(":")+1);
+  };
+
+  // keep string optimizations from occurring
+  std::vector<char*> export_strs;
+  for (auto *Arg : Args.filtered(OPT_only_export)) {
+     auto name  = get_first(std::string(Arg->getValue()));
+     char* cname = new char[name.size()];
+     memcpy(cname, name.c_str(), name.size());
+     export_strs.push_back(cname);
+     if (!name.empty()) {
+        auto type = get_second(std::string(Arg->getValue()));
+        WasmExport we = {cname, get_kind(type.c_str()), 0};
+        Config->exports.push_back(we);
+     }
+  }
   if (EntrySym)
     EntrySym->setHidden(false);
 
@@ -486,5 +539,8 @@ void LinkerDriver::link(ArrayRef<const char *> ArgsArr) {
   markLive();
 
   // Write the result to the file.
-  writeResult();
+  writeResult(true);
+
+  for (auto cp : export_strs)
+     delete[] cp;
 }

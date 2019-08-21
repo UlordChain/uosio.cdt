@@ -46,6 +46,8 @@ public:
   std::vector<BitcodeFile *> BitcodeFiles;
   std::vector<InputFunction *> SyntheticFunctions;
   std::vector<InputGlobal *> SyntheticGlobals;
+  std::set<StringRef> allowed;
+  bool EntryIsUndefined = true;
 
   void reportRemainingUndefines();
 
@@ -59,7 +61,9 @@ public:
                          uint32_t Size);
   Symbol *addDefinedGlobal(StringRef Name, uint32_t Flags, InputFile *File,
                            InputGlobal *G);
-
+  inline void addAllowedUndefFunction(StringRef Name) {
+     allowed.insert(Name);
+  }
   Symbol *addUndefinedFunction(StringRef Name, uint32_t Flags, InputFile *File,
                                const WasmSignature *Signature);
   Symbol *addUndefinedData(StringRef Name, uint32_t Flags, InputFile *File);
