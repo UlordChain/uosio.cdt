@@ -1,4 +1,4 @@
-## ABI generator attributes
+## ABI/Code generator attributes
 Unlike the old ABI generator tool, the new tool uses C++11 or GNU style attributes to mark ```actions``` and ```tables```.
 #### [[uosio::action]]
 This attribute marks either a struct or a method as an action.
@@ -28,6 +28,7 @@ struct __attribute__((uosio_action)) testa {
 ```
 If your action name is not a valid [UOSIO name](https://developers.uos.io/uosio-cpp/docs/naming-conventions) you can explicitly specify the name in the attribute ```c++ [[uosio::action("<valid action name>")]]```
 
+#### [[uosio::table]]
 Example (two ways to declare a table for ABI generation):
 ```
 struct [[uosio::table]] testtable {
@@ -44,11 +45,48 @@ typedef uosio::multi_index<"tablename"_n, testtable> testtable_t;
 ```
 If you don't want to use the multi-index you can explicitly specify the name in the attribute ```c++ [[uosio::table("<valid action name>")]]```.
 
-For an example contract of ABI generation please see the file ./examples/abigen_test/test.cpp. You can generate the ABI for this file with `uosio-abigen test.cpp --output=test.abi`.
+#### [[uosio::contract("\<any name you like\>")]]
+```
+class [[uosio::contract("<any name you would like>")]] test_contract : public uosio::contract {
+};
+```
+This will mark this `class` as being an `UOSIO` contract, this allows for namespacing of contracts, i.e. you can include headers like `uosio::token` and not have `uosio::token`'s actions/tables wind up in you ABI or generated dispatcher.
+
+#### [[uosio::on_notify("\<valid uosio account name\>::\<valid uosio action name\>")]]
+```
+[[uosio::on_notify("uosio.token::transfer")]]
+void on_token_transfer(name from, name to, asset quantity, std::string memo) {
+   do something on transfer from uosio.token...
+}
+
+[[uosio::on_notify("*::transfer")]]
+void on_any_transfer(name from, name to, asset quantity, std::string memo) {
+   do something on transfer from any account...
+}
+```
+
+#### [[uosio::wasm_entry]]
+```
+[[uosio::wasm_entry]]
+void some_function(...) {
+   do something...
+}
+```
+
+This will mark an arbitrary function as an entry point, which will then wrap the function with global constructors (ctors) and global destructors (dtors).  This will allow for the uosio.cdt toolchain to produce WASM binaries for other ecosystems.
+
+#### [[uosio::wasm_import]]
+```
+extern "C" {
+   __attribute__((uosio_wasm_import))
+   void some_intrinsic(...);
+}
+```
+
+This will mark a function declaration as being a WebAssembly import.  This allows for other compilation modes to specify which functions are import only (i.e. do not link) without having to maintain a secondary file with duplicate declarations.
 
 ### Fixing an ABI or Writing an ABI Manually
-- The sections to the ABI are pretty simple to understand and the syntax is purely JSON, so it is reasonable to write an ABI file manually.
-- The ABI generation will never be completely perfect for every contract written. Advanced features of the newest version of the ABI will require manual construction of the ABI, and odd and advanced C++ patterns could capsize the generators type deductions. So having a good knowledge of how to write an ABI should be an essential piece of knowledge of a smart contract writer.
+- Advanced features of the newest version of the ABI will require manual construction of the ABI, and odd and advanced C++ patterns could capsize the generators type deductions. So having a good knowledge of how to write an ABI should be an essential piece of knowledge of a smart contract writer.
 - Please refer to [developers.uos.io "How to Write an ABI File"](https://developers.uos.io/uosio-cpp/docs/how-to-write-an-abi) to learn about the different sections of an ABI.
 
 ### Adding Ricardian Contracts and Clauses to ABI
