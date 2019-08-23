@@ -271,6 +271,9 @@ extern "C" {
    uint64_t  current_time() {
       return intrinsics::get().call<intrinsics::current_time>();
    }
+   void require_notify_info(const char* cstr, uint32_t len) {
+      return intrinsics::get().call<intrinsics::require_notify_info>(cstr, len);
+   } 
    uint64_t  publication_time() {
       return intrinsics::get().call<intrinsics::publication_time>();
    }

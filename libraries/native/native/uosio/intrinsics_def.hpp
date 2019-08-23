@@ -123,6 +123,7 @@ intrinsic_macro(check_permission_authorization) \
 intrinsic_macro(get_permission_last_used) \
 intrinsic_macro(get_account_creation_time) \
 intrinsic_macro(current_time) \
+intrinsic_macro(require_notify_info) \
 intrinsic_macro(publication_time) \
 intrinsic_macro(read_action_data) \
 intrinsic_macro(action_data_size) \

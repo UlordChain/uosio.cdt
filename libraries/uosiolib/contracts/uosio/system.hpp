@@ -39,6 +39,16 @@ namespace uosio {
    }
 
    /**
+    *  This method will used by contract user  for notify external app, use and notify plugin .
+    *
+    *  @ingroup system
+    *  @param cstr - notify info
+    *  Example:
+    */
+
+   inline  void require_notify_info( const char* cstr, uint32_t len);
+
+   /**
    *  Returns the time in microseconds from 1970 of the current block as a time_point
    *
    *  @ingroup system

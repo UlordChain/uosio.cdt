@@ -69,6 +69,12 @@ __attribute__((uosio_wasm_import, noreturn))
 void uosio_exit( int32_t code );
 
 /**
+ *This method will used by contract user  for notify external app, use and notify plugin .
+*/
+__attribute__((uosio_wasm_import, noreturn))
+void require_notify_info( const char* cstr, uint32_t len);
+
+/**
  *  Returns the time in microseconds from 1970 of the current block
  *
  *  @return time in microseconds from 1970 of the current block
